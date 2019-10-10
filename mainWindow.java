@@ -156,4 +156,26 @@ public class mainWindow {
             System.exit(1);
         }
     }
+    
+    public void findConnection(String s1, String s2){
+        node node1 = new node(s1);
+        node node2 = new node(s2);
+        tree tree1 = new tree(node1);
+        tree tree2 = new tree(node2);
+        node1.setTree(tree1);
+        node2.setTree(tree2);
+
+        /*SQL logic???????????? send halp.
+        What do i need?
+            - An SQL statement that I can input a name and it gives me the list of titles they were involved in
+            - An SQL statement that lets me search name_basics for title t###### numbers
+        */
+
+        /* tree logic
+        How do I go through the tree from Root -> children -> ... -> connection -> previous -> ... -> Root
+         */
+
+        /* ALSO! just need ideas on how to make this smaller, because it's bound to be GIANTIC right now
+         */
+    }
 }
