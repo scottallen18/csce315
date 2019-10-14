@@ -1,0 +1,95 @@
+import java.util.ArrayList;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.*;
+import javax.swing.*;
+import java.sql.DriverManager;
+import java.awt.GraphicsConfiguration;
+import javax.swing.JFrame;
+import java.awt.GridLayout;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+public class test {
+    private static final JFrame frame = new JFrame("Database Queries");
+
+    private static final JButton btn = new JButton("OK");
+
+    private static final ActionListener choice1 = new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+
+            frame.getContentPane().removeAll();
+            frame.repaint();
+            frame.setSize(750, 500);
+            JLabel name1= new JLabel();
+            JLabel name2= new JLabel();
+            JButton ok = new JButton("Done");
+            ok.setVerticalAlignment(SwingConstants.BOTTOM);
+            ok.setHorizontalAlignment(SwingConstants.RIGHT);
+            ok.setPreferredSize(new Dimension(150, 80));
+
+            name1.setText("First Cast Members Name: ");
+            name2.setText("Second Cast Members Name: ");
+            name1.setPreferredSize(new Dimension(120, 80));
+            name2.setPreferredSize(new Dimension(120, 80));
+            JTextField first_name = new JTextField();
+            JTextField second_name = new JTextField();
+            first_name.setHorizontalAlignment(JTextField.RIGHT);
+            second_name.setHorizontalAlignment(JTextField.RIGHT);
+
+            frame.add(name1);
+            frame.add(name2);
+            frame.add(first_name);
+            frame.add(second_name);
+            frame.add(ok);
+            ActionListener name1_input = new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    //Here we get the name of the first person who we need to connect
+                    String name = first_name.getText();
+                    System.out.println(name);
+                }
+            };
+            ActionListener name2_input = new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    //Here we get the name of the first person who we need to connect
+                    String name = second_name.getText();
+                    System.out.println(name);
+                }
+            };
+            first_name.addActionListener(name1_input);
+            second_name.addActionListener(name2_input);
+
+            frame.setVisible(true);
+        }
+    };
+
+    private static final ActionListener choice2 = new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            System.out.println("X");
+        }
+    };
+
+    public static void main(String[] args) {
+
+
+        JButton question1,question2;
+        question1 = new JButton("Find the closest connection between 2 cast members");
+        question2 = new JButton("Find the Least ammount of cast members who have worked every year between two years");
+        frame.add(question1);
+        frame.add(question2);
+
+        frame.setLayout(new GridLayout(2,1));
+        question1.addActionListener(choice1);
+        question2.addActionListener(choice2);
+
+
+        frame.setLocation(1000, 1000);
+        frame.setSize(800,300);
+        frame.setVisible(true);
+
+    }
+}
