@@ -4,9 +4,15 @@ import java.awt.event.ActionListener;
 import java.sql.*;
 import javax.swing.*;
 import java.sql.DriverManager;
+import java.util.ArrayList;
 
 public class mainWindow {
+    private static Connection conn = null;
+    private static String username = "brian.lu32_605";
+    private static String password = "studentpwd";
+
     private static String sqlStatement = null;
+
     private static final JFrame frame = new JFrame("Database Queries");
     private static final JPanel panel = new JPanel();
     private static final JLabel lbl = new JLabel("Select one of the possible choices and click OK");
@@ -17,8 +23,144 @@ public class mainWindow {
     private static final JButton btn = new JButton("OK");
     private static final JTextField search = new JTextField();
     private static boolean finishedGUI = false;
+    
+    public static void findConnection(String s1, String s2){
+        node node1 = new node(s1);
+        node node2 = new node(s2);
+        tree tree1 = new tree(node1);
+        tree tree2 = new tree(node2);
+        node1.setTree(tree1);
+        node2.setTree(tree2);
+        node1.setOtherTree(tree2);
+        node2.setOtherTree(tree1);
 
-    private static final ActionListener AL = new ActionListener() {
+        try {
+            Class.forName("org.postgresql.Driver");
+            conn = DriverManager.getConnection("jdbc:postgresql://db-315.cse.tamu.edu/brian.lu32_605",
+                    username, password);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            System.exit(0);
+        }//end try catch
+        JOptionPane.showMessageDialog(null, "Opened database successfully");
+
+        int heightOfTree = 0;
+        findRecursion(node1, heightOfTree);
+        findRecursion(node2, heightOfTree);
+        System.out.println(node1.getData());
+        System.out.println(node1.getChildren().size());
+        while (true) {
+            heightOfTree++;
+            System.out.println(heightOfTree);
+            if (heightOfTree == 1)
+                System.out.println("1");
+            else if (heightOfTree == 2) {
+
+            }
+            for (int i = 0; i<node1.getChildren().size(); i++) {
+                node temp;
+                System.out.println("In Here.1");
+                temp = node1.getChildren().get(i);
+                System.out.println(temp.getData());
+                findRecursion(temp, heightOfTree);
+                System.out.println(temp.getChildren().size());
+                if (temp.getTree().isConnectionFound())
+                    break;
+            }
+            for (int i = 0; i<node2.getChildren().size(); i++){
+                node temp;
+                temp = node2.getChildren().get(i);
+                System.out.println("In Here.2");
+                System.out.println(temp.getData());
+                findRecursion(temp, heightOfTree);
+                System.out.println(temp.getChildren().size());
+                if (temp.getTree().isConnectionFound())
+                    break;
+            }
+            if (node1.getTree().isConnectionFound() || node2.getTree().isConnectionFound())
+                break;
+            if (heightOfTree > 3)
+                break;
+        }
+
+    }
+
+    public static void findRecursion(node node, int heightOfTree){
+        if (node.getTree().isConnectionFound())
+            return;
+        ArrayList<String> rawChildren = new ArrayList<String>();
+        ArrayList<String> children = new ArrayList<String>();
+        if (heightOfTree % 2 == 0) {
+            try {
+                System.out.println("Adding titles");
+                sqlStatement = "SELECT titles FROM name_basics WHERE primaryName = '" + node.getData() + "';";
+
+                Statement stmt = conn.createStatement();
+                ResultSet result = stmt.executeQuery(sqlStatement);
+                //Add the titles into the array list
+                while (result.next()) {
+                    rawChildren.add(result.getString("titles"));
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            String temp = ",";
+            Character comma = temp.charAt(0);
+
+            for (String s : rawChildren) {
+                if (s == null){
+                }
+                else {
+                    ArrayList<Character> c = new ArrayList<Character>();
+                    for (int i = 0; i < s.length(); i++)
+                        c.add(s.charAt(i));
+                    StringBuilder b = new StringBuilder();
+                    for (int j = 0; j < c.size(); j++) {
+                        if (c.get(j) != comma && j != c.size()-1) {
+                            b.append(c.get(j));
+                        } else if (j == c.size()-1){
+                            b.append(c.get(j));
+                            children.add(b.toString());
+                        }
+                        else {
+                            children.add(b.toString());
+                            b.delete(0,b.length());
+                        }
+                    }
+                }
+
+            }
+
+
+        }
+        else {
+            try {
+                System.out.println("Adding actors");
+                sqlStatement = "SELECT primaryName FROM name_basics WHERE titles like '%" + node.getData() + "%';";
+
+                Statement stmt = conn.createStatement();
+                ResultSet result = stmt.executeQuery(sqlStatement);
+
+                //Add the titles into the array list
+                while (result.next()) {
+                    children.add(result.getString("primaryName"));
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        for (String s : children) {
+            node.addChild(s);
+            if (node.getTree().isConnectionFound())
+                break;
+        }
+    }
+
+    private static final ActionListener first_choice = new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
             if (cb.getSelectedItem() == "name_basics") {
@@ -41,7 +183,7 @@ public class mainWindow {
 
             btn.setAlignmentX(Component.CENTER_ALIGNMENT);
             panel.add(btn);
-            btn.removeActionListener(AL);
+            btn.removeActionListener(first_choice);
             btn.addActionListener(AL2);
             frame.setVisible(true);
         }
@@ -50,7 +192,7 @@ public class mainWindow {
         @Override
         public void actionPerformed(ActionEvent e) {
             search.setAlignmentX(Component.CENTER_ALIGNMENT);
-            search.setSize(panel.getWidth(), 100);
+            search.setSize(panel.getWidth(), 50);
             panel.add(search);
             btn.setAlignmentX(Component.CENTER_ALIGNMENT);
             panel.add(btn);
@@ -68,6 +210,7 @@ public class mainWindow {
             else {
                 sqlStatement = "SELECT primaryTitle FROM " + cb.getSelectedItem() + " WHERE " + cb2.getSelectedItem() + " = '" + search.getText() + "'";
             }
+            //System.out.println(sqlStatement);
             finishedGUI = true;
             frame.setVisible(false);
         }
@@ -75,6 +218,8 @@ public class mainWindow {
 
     public static void main(String[] args) {
         //Building the connection
+        //NEED USER INPUT HERE
+        //findConnection("Tom Cruise", "Kim Pawlik"); //Recursive call for question 1
         Connection conn = null;
         String username = "brian.lu32_605";
         String password = "studentpwd";
@@ -92,46 +237,38 @@ public class mainWindow {
         try {
             //create a statement object
             Statement stmt = conn.createStatement();
-            //create an SQL statement
-            //Add GUI here to figure out what statement the user wants from us
-
             frame.setVisible(true);
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setSize(500, 500);
             frame.setLocation(430, 100);
-
             panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-
             frame.add(panel);
-
             lbl.setAlignmentX(Component.CENTER_ALIGNMENT);
-
             panel.add(lbl);
-
             cb.setMaximumSize(cb.getPreferredSize());
             cb.setAlignmentX(Component.CENTER_ALIGNMENT);
             panel.add(cb);
-
             btn.setAlignmentX(Component.CENTER_ALIGNMENT);
             panel.add(btn);
-
             frame.setVisible(true);
-            btn.addActionListener(AL);
+            btn.addActionListener(first_choice);
+
             while (true) {
                 if (finishedGUI)
                     break;
                 else
                     Thread.sleep(1000);
             }
-
             //send statement to DBMS
             System.out.println("Got your Query, collecting data!");
             ResultSet result = stmt.executeQuery(sqlStatement);
-
             //OUTPUT
             while (result.next()) {
                 //System.out.println(result.getString("cus_lname"));
-                cus_lname.append(result.getString("primaryName")).append("\n");
+                if (cb.getSelectedItem() == "name_basics")
+                    cus_lname.append(result.getString("primaryName")).append("\n");
+                else
+                    cus_lname.append(result.getString("primaryTitle")).append("\n");
                 // Do this so the list doesnt get too big
                 if (cus_lname.length() >= 1000) {
                     cus_lname.append("These are the first chunk of responses");
@@ -156,26 +293,7 @@ public class mainWindow {
             System.exit(1);
         }
     }
-    
-    public void findConnection(String s1, String s2){
-        node node1 = new node(s1);
-        node node2 = new node(s2);
-        tree tree1 = new tree(node1);
-        tree tree2 = new tree(node2);
-        node1.setTree(tree1);
-        node2.setTree(tree2);
 
-        /*SQL logic???????????? send halp.
-        What do i need?
-            - An SQL statement that I can input a name and it gives me the list of titles they were involved in
-            - An SQL statement that lets me search name_basics for title t###### numbers
-        */
 
-        /* tree logic
-        How do I go through the tree from Root -> children -> ... -> connection -> previous -> ... -> Root
-         */
-
-        /* ALSO! just need ideas on how to make this smaller, because it's bound to be GIANTIC right now
-         */
-    }
 }
+
