@@ -5,91 +5,129 @@ import java.awt.event.ActionListener;
 import java.sql.*;
 import javax.swing.*;
 import java.sql.DriverManager;
-import java.awt.GraphicsConfiguration;
-import javax.swing.JFrame;
-import java.awt.GridLayout;
-import javax.swing.JButton;
-import javax.swing.JFrame;
 public class test {
-    private static final JFrame frame = new JFrame("Database Queries");
+	private static final JFrame frame = new JFrame("Database Queries");
 
-    private static final JButton btn = new JButton("OK");
+	private static void printAnswer1(String first_name, String second_name) {
+		frame.getContentPane().removeAll();
+		frame.getContentPane().repaint();
+		GridBagLayout display = new GridBagLayout();
+		frame.setLayout(display);
+		System.out.println(first_name + " " + second_name);
 
-    private static final ActionListener choice1 = new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
+	}
+	private static void printAnswer2(int first_year, int second_year) {
+		frame.getContentPane().removeAll();
+		frame.getContentPane().repaint();
+		GridBagLayout display = new GridBagLayout();
+		frame.setLayout(display);
+		System.out.println(first_year + " " + second_year);
 
-            frame.getContentPane().removeAll();
-            frame.repaint();
-            frame.setSize(750, 500);
-            JLabel name1= new JLabel();
-            JLabel name2= new JLabel();
-            JButton ok = new JButton("Done");
-            ok.setVerticalAlignment(SwingConstants.BOTTOM);
-            ok.setHorizontalAlignment(SwingConstants.RIGHT);
-            ok.setPreferredSize(new Dimension(150, 80));
+	}
 
-            name1.setText("First Cast Members Name: ");
-            name2.setText("Second Cast Members Name: ");
-            name1.setPreferredSize(new Dimension(120, 80));
-            name2.setPreferredSize(new Dimension(120, 80));
-            JTextField first_name = new JTextField();
-            JTextField second_name = new JTextField();
-            first_name.setHorizontalAlignment(JTextField.RIGHT);
-            second_name.setHorizontalAlignment(JTextField.RIGHT);
+	private static final ActionListener choice1 = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			frame.getContentPane().removeAll();
+			frame.getContentPane().repaint();
+			GridLayout grid = new GridLayout(1, 2);
+			frame.setLayout(grid);
+			JTextField answer= new JTextField();
+			JLabel name1= new JLabel();
+			name1.setText("First Cast Members Name: ");
 
-            frame.add(name1);
-            frame.add(name2);
-            frame.add(first_name);
-            frame.add(second_name);
-            frame.add(ok);
-            ActionListener name1_input = new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    //Here we get the name of the first person who we need to connect
-                    String name = first_name.getText();
-                    System.out.println(name);
-                }
-            };
-            ActionListener name2_input = new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    //Here we get the name of the first person who we need to connect
-                    String name = second_name.getText();
-                    System.out.println(name);
-                }
-            };
-            first_name.addActionListener(name1_input);
-            second_name.addActionListener(name2_input);
+			frame.add(name1);
+			frame.add(answer);
+			frame.setVisible(true);
 
-            frame.setVisible(true);
-        }
-    };
+			ActionListener name1_input = new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					//Here we get the name of the first person who we need to connect
+					String first_name = answer.getText();
+					frame.getContentPane().removeAll();
+					frame.getContentPane().repaint();
+					GridLayout grid = new GridLayout(1, 2);
+					frame.setLayout(grid);
+					JTextField answer2= new JTextField();
+					JLabel name2= new JLabel();
+					name2.setText("Find the connection between " + first_name + " and : ");
+					frame.add(name2);
+					frame.add(answer2);
+					frame.setVisible(true);
+					ActionListener name2_input = new ActionListener() {
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							//Here we get the name of the first person who we need to connect
+							String second_name = answer2.getText();
+							printAnswer1(first_name, second_name);
+						}
+					};
+					answer2.addActionListener(name2_input);
+				}
+			};
+			answer.addActionListener(name1_input);
+		}
+	};
+	private static final ActionListener choice2 = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			frame.getContentPane().removeAll();
+			frame.getContentPane().repaint();
+			GridLayout grid = new GridLayout(1, 2);
+			frame.setLayout(grid);
+			JTextField answer= new JTextField();
+			JLabel name1= new JLabel();
+			name1.setText("First Year: ");
 
-    private static final ActionListener choice2 = new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            System.out.println("X");
-        }
-    };
+			frame.add(name1);
+			frame.add(answer);
+			frame.setVisible(true);
 
-    public static void main(String[] args) {
+			ActionListener name1_input = new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					//Here we get the name of the first person who we need to connect
+					int first_year = Integer.parseInt(answer.getText());
+					frame.getContentPane().removeAll();
+					frame.getContentPane().repaint();
+					GridLayout grid = new GridLayout(1, 2);
+					frame.setLayout(grid);
+					JTextField answer2= new JTextField();
+					JLabel name2= new JLabel();
+					name2.setText("Find the connection between " + first_year + " and : ");
+					frame.add(name2);
+					frame.add(answer2);
+					frame.setVisible(true);
+					ActionListener name2_input = new ActionListener() {
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							//Here we get the name of the first person who we need to connect
+							int second_year = Integer.parseInt(answer2.getText());
+							printAnswer2(first_year, second_year);
+						}
+					};
+					answer2.addActionListener(name2_input);
+				}
+			};
+			answer.addActionListener(name1_input);
+		}
+	};
+
+	public static void main(String[] args) {
 
 
-        JButton question1,question2;
-        question1 = new JButton("Find the closest connection between 2 cast members");
-        question2 = new JButton("Find the Least ammount of cast members who have worked every year between two years");
-        frame.add(question1);
-        frame.add(question2);
+		JButton question1,question2;
+		question1 = new JButton("Find the closest connection between 2 cast members");
+		question2 = new JButton("Find the Least ammount of cast members who have worked every year between two years");
+		frame.add(question1);
+		frame.add(question2);
+		frame.setLayout(new GridLayout(2,1));
+		question1.addActionListener(choice1);
+		question2.addActionListener(choice2);
+		frame.setLocation(1000, 1000);
+		frame.setSize(800,300);
+		frame.setVisible(true);
 
-        frame.setLayout(new GridLayout(2,1));
-        question1.addActionListener(choice1);
-        question2.addActionListener(choice2);
-
-
-        frame.setLocation(1000, 1000);
-        frame.setSize(800,300);
-        frame.setVisible(true);
-
-    }
+	}
 }
