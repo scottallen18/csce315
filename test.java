@@ -97,6 +97,8 @@ public class test {
   }
 
   private static String sqlStatement = null;
+  private static int first_year;
+  private static int second_year;
 	private static final JFrame frame = new JFrame("Database Queries");
 
 	private static void printAnswer1(String first_name, String second_name) {
@@ -179,7 +181,7 @@ public class test {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					//Here we get the name of the first person who we need to connect
-					int first_year = Integer.parseInt(answer.getText());
+					first_year = Integer.parseInt(answer.getText());
 					frame.getContentPane().removeAll();
 					frame.getContentPane().repaint();
 					GridLayout grid = new GridLayout(1, 2);
@@ -194,8 +196,8 @@ public class test {
 						@Override
 						public void actionPerformed(ActionEvent e) {
 							//Here we get the name of the first person who we need to connect
-                            int second_year = Integer.parseInt(answer2.getText());
-                            sqlStatement = "SELECT * FROM title_basics WHERE startyear BETWEEN " + first_year + " AND " + second_year;
+              second_year = Integer.parseInt(answer2.getText());
+              sqlStatement = "SELECT * FROM title_basics WHERE startyear BETWEEN " + first_year + " AND " + second_year;
 							printAnswer2(first_year, second_year);
 						}
 					};
@@ -362,8 +364,8 @@ public class test {
               for(int titlesIndex = 0; titlesIndex < ListOfActorsWithTitles.get(actorsIndex).size(); titlesIndex++)
               {
                 //int counter = 0;
-                int yearStarted = 1880;
-                int yearEnded = 1890;
+                int yearStarted = first_year;
+                int yearEnded = second_year;
 
                 Vector listOfTitlesFromActor = ListOfActorsWithTitles.get(actorsIndex); // This is the list of titles from the current actor
                 sqlStatement = "SELECT * FROM title_basics WHERE tconst = '" + listOfTitlesFromActor.get(titlesIndex) + "'"; // This is searching for the current title
