@@ -116,7 +116,6 @@ public class test {
 
 	public static void main(String[] args) {
 
-
 		JButton question1,question2;
 		question1 = new JButton("Find the closest connection between 2 cast members");
 		question2 = new JButton("Find the Least ammount of cast members who have worked every year between two years");
