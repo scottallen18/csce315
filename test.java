@@ -96,19 +96,128 @@ public class test {
     }
   }
 
-  private static String sqlStatement = null;
-  private static int first_year;
-  private static int second_year;
-	private static final JFrame frame = new JFrame("Database Queries");
+    private static String sqlStatement = null;
+    private static int first_year;
+    private static int second_year;
+    private static final JFrame frame = new JFrame("Database Queries");
+    private static Connection conn = null;
+    private static String username = "brian.lu32_605";
+    private static String password = "studentpwd";
+    private static Queue<node> qChildren = new LinkedList<>();
 
-	private static void printAnswer1(String first_name, String second_name) {
-		frame.getContentPane().removeAll();
-		frame.getContentPane().repaint();
-		GridBagLayout display = new GridBagLayout();
-		frame.setLayout(display);
-		System.out.println(first_name + " " + second_name);
+        public static void findConnection(String s1, String s2){
+        node node1 = new node(s1);
+        node node2 = new node(s2);
+        tree tree1 = new tree(node1);
+        tree tree2 = new tree(node2);
+        node1.setTree(tree1);
+        node2.setTree(tree2);
+        node1.setOtherTree(tree2);
+        node2.setOtherTree(tree1);
+        node1.setHeight(0);
+        node2.setHeight(0);
 
-	}
+        try {
+            Class.forName("org.postgresql.Driver");
+            conn = DriverManager.getConnection("jdbc:postgresql://db-315.cse.tamu.edu/brian.lu32_605",
+                    username, password);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            System.exit(0);
+        }//end try catch
+        JOptionPane.showMessageDialog(null, "Opened database successfully");
+
+        findRecursion(node1, node1.getHeight());
+        findRecursion(node2, node2.getHeight());
+        qChildren.add(node1);
+        qChildren.add(node2);
+
+        while(true){
+            node temp = qChildren.peek();
+            findRecursion(qChildren.remove(), temp.getHeight());
+            qChildren.addAll(temp.getChildren());
+            for (int i = 0; i < temp.getChildren().size(); i++) {
+                if (temp.getTree().isConnectionFound())
+                    break;
+            }
+            if (temp.getTree().isConnectionFound())
+                break;
+        }
+
+    }
+
+    public static void findRecursion(node node, int heightOfTree){
+        if (node.getTree().isConnectionFound())
+            return;
+        ArrayList<String> rawChildren = new ArrayList<String>();
+        ArrayList<String> children = new ArrayList<String>();
+        if (heightOfTree % 2 == 0) {
+            try {
+                sqlStatement = "SELECT titles FROM name_basics WHERE primaryName = '" + node.getData() + "';";
+
+                Statement stmt = conn.createStatement();
+                ResultSet result = stmt.executeQuery(sqlStatement);
+                //Add the titles into the array list
+                while (result.next()) {
+                    rawChildren.add(result.getString("titles"));
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            String temp = ",";
+            Character comma = temp.charAt(0);
+
+            for (String s : rawChildren) {
+                if (s == null){
+                }
+                else {
+                    ArrayList<Character> c = new ArrayList<Character>();
+                    for (int i = 0; i < s.length(); i++)
+                        c.add(s.charAt(i));
+                    StringBuilder b = new StringBuilder();
+                    for (int j = 0; j < c.size(); j++) {
+                        if (c.get(j) != comma && j != c.size()-1) {
+                            b.append(c.get(j));
+                        } else if (j == c.size()-1){
+                            b.append(c.get(j));
+                            children.add(b.toString());
+                        }
+                        else {
+                            children.add(b.toString());
+                            b.delete(0,b.length());
+                        }
+                    }
+                }
+
+            }
+
+
+        }
+        else {
+            try {
+                sqlStatement = "SELECT primaryName FROM name_basics WHERE titles like '%" + node.getData() + "%';";
+
+                Statement stmt = conn.createStatement();
+                ResultSet result = stmt.executeQuery(sqlStatement);
+
+                //Add the titles into the array list
+                while (result.next()) {
+                    children.add(result.getString("primaryName"));
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        for (String s : children) {
+            node.addChild(s);
+            if (node.getTree().isConnectionFound())
+                break;
+        }
+    }
 	private static void printAnswer2(int first_year, int second_year) {
 		frame.getContentPane().removeAll();
 		frame.getContentPane().repaint();
