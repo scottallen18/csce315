@@ -5,6 +5,8 @@ import java.sql.*;
 import javax.swing.*;
 import java.sql.DriverManager;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
 
 public class mainWindow {
     private static Connection conn = null;
@@ -12,6 +14,8 @@ public class mainWindow {
     private static String password = "studentpwd";
 
     private static String sqlStatement = null;
+
+    private static Queue<node> qChildren = new LinkedList<>();
 
     private static final JFrame frame = new JFrame("Database Queries");
     private static final JPanel panel = new JPanel();
@@ -23,7 +27,7 @@ public class mainWindow {
     private static final JButton btn = new JButton("OK");
     private static final JTextField search = new JTextField();
     private static boolean finishedGUI = false;
-    
+
     public static void findConnection(String s1, String s2){
         node node1 = new node(s1);
         node node2 = new node(s2);
@@ -33,6 +37,7 @@ public class mainWindow {
         node2.setTree(tree2);
         node1.setOtherTree(tree2);
         node2.setOtherTree(tree1);
+        node1.setHeight(0);
 
         try {
             Class.forName("org.postgresql.Driver");
@@ -45,43 +50,65 @@ public class mainWindow {
         }//end try catch
         JOptionPane.showMessageDialog(null, "Opened database successfully");
 
-        int heightOfTree = 0;
-        findRecursion(node1, heightOfTree);
-        findRecursion(node2, heightOfTree);
-        System.out.println(node1.getData());
-        System.out.println(node1.getChildren().size());
-        while (true) {
+        findRecursion(node1, node1.getHeight());
+        findRecursion(node2, node2.getHeight());
+        qChildren.add(node1);
+        qChildren.add(node2);
+        /*while (true) {
             heightOfTree++;
             System.out.println(heightOfTree);
-            if (heightOfTree == 1)
-                System.out.println("1");
-            else if (heightOfTree == 2) {
+            int numChildren = temp1.getChildren().size();
+            for (int j = 0; j < numChildren; j++) {
+                temp1 = temp1.getChildren().get(0);
 
+                for (int i = 0; i < temp1.getPrevious().getChildren().size(); i++) {
+
+                    temp1 = temp1.getPrevious().getChildren().get(i);
+
+                    System.out.println("Adding children to " + temp1.getData() + " in tree of " + node1.getTree().getRoot().getData());
+                    System.out.println(("i = " + i + " out of " + (temp1.getPrevious().getChildren().size() - 1)));
+
+                    findRecursion(temp1, heightOfTree);
+
+                    if (temp1.getTree().isConnectionFound())
+                        break;
+                }
             }
-            for (int i = 0; i<node1.getChildren().size(); i++) {
-                node temp;
-                System.out.println("In Here.1");
-                temp = node1.getChildren().get(i);
-                System.out.println(temp.getData());
-                findRecursion(temp, heightOfTree);
-                System.out.println(temp.getChildren().size());
+            numChildren = temp2.getChildren().size();
+            for (int j = 0; j < numChildren; j++) {
+                temp2 = temp2.getChildren().get(0);
+                for (int i = 0; i < temp2.getPrevious().getChildren().size(); i++) {
+
+                    temp2 = temp2.getPrevious().getChildren().get(i);
+
+                    System.out.println("Adding children to " + temp2.getData() + " in tree of " + node2.getTree().getRoot().getData());
+                    System.out.println(("i = " + i + " out of " + (temp2.getPrevious().getChildren().size() - 1)));
+
+                    findRecursion(temp2, heightOfTree);
+
+                    if (temp2.getTree().isConnectionFound())
+                        break;
+                }
+            }
+                if (node1.getTree().isConnectionFound() || node2.getTree().isConnectionFound())
+                    break;
+                if (heightOfTree > 3)
+                    break;
+        }*/
+        while(true){
+            node temp = qChildren.peek();
+            System.out.println("Height is: " + temp.getHeight());
+            System.out.println("Adding children to " + temp.getData() + " in tree of " + temp.getTree().getRoot().getData());
+            findRecursion(qChildren.remove(), temp.getHeight());
+            qChildren.addAll(temp.getChildren());
+            for (int i = 0; i < temp.getChildren().size(); i++) {
                 if (temp.getTree().isConnectionFound())
                     break;
             }
-            for (int i = 0; i<node2.getChildren().size(); i++){
-                node temp;
-                temp = node2.getChildren().get(i);
-                System.out.println("In Here.2");
-                System.out.println(temp.getData());
-                findRecursion(temp, heightOfTree);
-                System.out.println(temp.getChildren().size());
-                if (temp.getTree().isConnectionFound())
-                    break;
-            }
-            if (node1.getTree().isConnectionFound() || node2.getTree().isConnectionFound())
+            if (temp.getTree().isConnectionFound())
                 break;
-            if (heightOfTree > 3)
-                break;
+            //if (temp.getHeight() > 3)
+            //    break;
         }
 
     }
