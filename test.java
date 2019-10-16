@@ -127,6 +127,8 @@ public class test {
             System.exit(0);
         }//end try catch
         JOptionPane.showMessageDialog(null, "Opened database successfully");
+		
+	System.out.println("Starting the search!");	
 
         findRecursion(node1, node1.getHeight());
         findRecursion(node2, node2.getHeight());
