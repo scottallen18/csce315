@@ -53,21 +53,14 @@ public class node {
     // If it doesnt, then add it and check the other tree
     void addChild(String s1) {
         node child = new node(s1, this, this.getTree(), this.getOtherTree(), (this.height + 1));
-        System.out.println("Checking for: " + child.getData());
          if (!alreadyExists(child)) {
-             System.out.println("Adding Child " + s1);
              children.add(child);
              if (checkOtherTree(child.otherTree, child)) {
-                 System.out.println("Connection Found!");
                  printOutConnection(child);
                  child.getTree().setConnectionFound(true);
                  child.getConnection().getTree().setConnectionFound(true);
              }
-             else
-                 System.out.println("This was not in the other tree");
          }
-         else
-             System.out.println("Tried adding something that was already in the tree");
     }
 
     private void printOutConnection(node child) {
