@@ -38,6 +38,7 @@ public class mainWindow {
         node1.setOtherTree(tree2);
         node2.setOtherTree(tree1);
         node1.setHeight(0);
+        node2.setHeight(0);
 
         try {
             Class.forName("org.postgresql.Driver");
@@ -54,47 +55,7 @@ public class mainWindow {
         findRecursion(node2, node2.getHeight());
         qChildren.add(node1);
         qChildren.add(node2);
-        /*while (true) {
-            heightOfTree++;
-            System.out.println(heightOfTree);
-            int numChildren = temp1.getChildren().size();
-            for (int j = 0; j < numChildren; j++) {
-                temp1 = temp1.getChildren().get(0);
-
-                for (int i = 0; i < temp1.getPrevious().getChildren().size(); i++) {
-
-                    temp1 = temp1.getPrevious().getChildren().get(i);
-
-                    System.out.println("Adding children to " + temp1.getData() + " in tree of " + node1.getTree().getRoot().getData());
-                    System.out.println(("i = " + i + " out of " + (temp1.getPrevious().getChildren().size() - 1)));
-
-                    findRecursion(temp1, heightOfTree);
-
-                    if (temp1.getTree().isConnectionFound())
-                        break;
-                }
-            }
-            numChildren = temp2.getChildren().size();
-            for (int j = 0; j < numChildren; j++) {
-                temp2 = temp2.getChildren().get(0);
-                for (int i = 0; i < temp2.getPrevious().getChildren().size(); i++) {
-
-                    temp2 = temp2.getPrevious().getChildren().get(i);
-
-                    System.out.println("Adding children to " + temp2.getData() + " in tree of " + node2.getTree().getRoot().getData());
-                    System.out.println(("i = " + i + " out of " + (temp2.getPrevious().getChildren().size() - 1)));
-
-                    findRecursion(temp2, heightOfTree);
-
-                    if (temp2.getTree().isConnectionFound())
-                        break;
-                }
-            }
-                if (node1.getTree().isConnectionFound() || node2.getTree().isConnectionFound())
-                    break;
-                if (heightOfTree > 3)
-                    break;
-        }*/
+        
         while(true){
             node temp = qChildren.peek();
             System.out.println("Height is: " + temp.getHeight());
@@ -107,8 +68,6 @@ public class mainWindow {
             }
             if (temp.getTree().isConnectionFound())
                 break;
-            //if (temp.getHeight() > 3)
-            //    break;
         }
 
     }
