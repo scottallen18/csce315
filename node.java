@@ -64,24 +64,68 @@ public class node {
     }
 
     private void printOutConnection(node child) {
+        try {
+            Class.forName("org.postgresql.Driver");
+            conn = DriverManager.getConnection("jdbc:postgresql://db-315.cse.tamu.edu/brian.lu32_605",
+                    username, password);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            System.exit(0);
+        }
         backward(child);
         forward(child.connection);
 
     }
     private void backward(node n){
+
         if(n.previous != null)
             backward(n.previous);
-        System.out.println(n.data + " connects to: ");
+        if (n.getHeight() % 2 ==0)
+            System.out.println(n.data + " connects to: ");
+        else {
+            ArrayList<String>answer = new ArrayList<>();
+            try {
+                sqlStatement = "SELECT primaryTitle FROM title_basics WHERE tconst = '" + n.getData() + "';";
+
+                Statement stmt = conn.createStatement();
+                ResultSet result = stmt.executeQuery(sqlStatement);
+                while (result.next()) {
+                    answer.add(result.getString("primaryTitle"));
+                }
+                System.out.println(answer.get(0) + " connects to: ");
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
     }
     private void forward(node n){
         n = n.previous;
         if(n.previous != null) {
-            System.out.println(n.data + " connects to: ");
+            if (n.getHeight() % 2 ==0)
+                System.out.println(n.data + " connects to: ");
+            else {
+                ArrayList<String>answer = new ArrayList<>();
+                try {
+                    sqlStatement = "SELECT primaryTitle FROM title_basics WHERE tconst = '" + n.getData() + "';";
+
+                    Statement stmt = conn.createStatement();
+                    ResultSet result = stmt.executeQuery(sqlStatement);
+                    while (result.next()) {
+                        answer.add(result.getString("primaryTitle"));
+                    }
+                    System.out.println(answer.get(0) + " connects to: ");
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
             forward(n.previous);
         }
         else
             System.out.println(n.data);
-
     }
     public node getPrevious() {
         return previous;
