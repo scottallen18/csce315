@@ -1,6 +1,8 @@
 import java.util.ArrayList;
 
 public class node {
+    private static String username = "brian.lu32_605";
+    private static String password = "studentpwd";
     private String data;
     private ArrayList<node> children;
     private node previous;
@@ -8,6 +10,9 @@ public class node {
     private tree otherTree;
     private node connection;
     private int height;
+    private static String sqlStatement = null;
+    private static Connection conn;
+
 
     public int getHeight() {
         return height;
