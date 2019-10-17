@@ -174,6 +174,7 @@ public class test {
 						public void actionPerformed(ActionEvent e) {
 							//Here we get the name of the first person who we need to connect
 							String second_name = answer2.getText();
+							findConnection(first_name, second_name);
 						}
 					};
 					answer2.addActionListener(name2_input);
