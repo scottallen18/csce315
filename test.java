@@ -17,6 +17,7 @@ public class test {
   private static String password = "studentpwd";
   private static Queue<node> qChildren = new LinkedList<>();
   private static Connection globalConnection;
+  private static String tableSelected = "";
 
   public static void findConnection(String s1, String s2){
     node node1 = new node(s1);
@@ -173,7 +174,6 @@ public class test {
 						public void actionPerformed(ActionEvent e) {
 							//Here we get the name of the first person who we need to connect
 							String second_name = answer2.getText();
-							//printAnswer1(first_name, second_name);
 						}
 					};
 					answer2.addActionListener(name2_input);
@@ -229,11 +229,147 @@ public class test {
 			answer.addActionListener(name1_input);
     } 
   };
+
+  private static final ActionListener choice3 = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			frame.getContentPane().removeAll();
+			frame.getContentPane().repaint();
+			GridLayout grid = new GridLayout(1, 2);
+      frame.setLayout(grid);
+      JTextField answer= new JTextField();
+      JLabel name3 = new JLabel();
+
+      sqlStatement = "SELECT * FROM ";  
+      
+      String[] tableChoices = {"Actors", "Movies/Series"};
+      JComboBox<String> tableCB = new JComboBox<String>(tableChoices);
+
+			name3.setText("Enter Query: ");
+
+			frame.add(name3);
+			frame.add(tableCB);
+      frame.setVisible(true);
+
+      ActionListener queryInput = new ActionListener()
+      {
+        @Override
+        public void actionPerformed(ActionEvent e)
+        {
+          String[] columnChoices = {"", "", "", "", ""};
+          String tableSelect = "";
+          if(tableCB.getSelectedItem() == "Actors"){
+            tableSelect = "name_basics ";
+            tableSelected = "name_basics";
+            columnChoices[0] = "Name of Actor";
+            columnChoices[1] = "Date of Birth of Actor";
+            columnChoices[2] = "Profession of Actor";
+            columnChoices[3] = "Known Movies of Actor";
+            columnChoices[4] = "All Info of Actor";
+          }
+          else if(tableCB.getSelectedItem() == "Movies/Series"){
+            tableSelect = "title_basics ";
+            tableSelected = "title_basics";
+            columnChoices[0] = "Movie/Series Name";
+            columnChoices[1] = "Year Movie/Series Aired";
+            columnChoices[2] = "Runtime of Movie/Series";
+            columnChoices[3] = "Genre of Movie/Series";
+            columnChoices[4] = "All Info of Movie/Series";
+          }
+          sqlStatement += tableSelect;
+
+          frame.getContentPane().removeAll();
+					frame.getContentPane().repaint();
+					GridLayout grid = new GridLayout(1, 2);
+          frame.setLayout(grid);
+          
+          JComboBox<String> columnCB = new JComboBox<String>(columnChoices);
+          JLabel columnPicker = new JLabel();
+          columnPicker.setText("Choose: ");
+          frame.add(columnPicker);
+          frame.add(columnCB);
+          frame.setVisible(true);
+
+          ActionListener getData = new ActionListener()
+          {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+              String columnSelect = "";
+              if(columnCB.getSelectedItem() == "Name of Actor")
+              {
+                columnSelect = "WHERE primaryname = ";
+              }
+              else if(columnCB.getSelectedItem() == "Date of Birth of Actor")
+              {
+                columnSelect = "WHERE birthyear = ";
+              }
+              else if(columnCB.getSelectedItem() == "Profession of Actor")
+              {
+                columnSelect = "WHERE profession = ";
+              }
+              else if(columnCB.getSelectedItem() == "Known Movies of Actor")
+              {
+                columnSelect = "WHERE titles = ";
+              }
+              else if(columnCB.getSelectedItem() == "Movie/Series Name")
+              {
+                columnSelect = "WHERE primaryTitle = ";
+              }
+              else if(columnCB.getSelectedItem() == "Year Movie/Series Aired")
+              {
+                columnSelect = "WHERE startyear = ";
+              }
+              else if(columnCB.getSelectedItem() == "Runtime of Movie/Series")
+              {
+                columnSelect = "WHERE runtimeMinutes = ";
+              }
+              else if(columnCB.getSelectedItem() == "Genre of Movie/Series")
+              {
+                columnSelect = "WHERE genre = ";
+              }
+              else if(columnCB.getSelectedItem() == "All Info of Actor" || columnCB.getSelectedItem() == "All Info of Movie/Series")
+              {
+                columnSelect = "";
+              }
+
+              sqlStatement += columnSelect;
+
+              frame.getContentPane().removeAll();
+              frame.getContentPane().repaint();
+              GridLayout grid = new GridLayout(1, 2);
+              frame.setLayout(grid);
+
+              JTextField sqlAnswer= new JTextField();
+              JLabel columnName = new JLabel();
+              columnName.setText(sqlStatement);
+              frame.add(columnName);
+              frame.add(sqlAnswer);
+              frame.setVisible(true);
+
+              ActionListener getAnswer = new ActionListener()
+              {
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                  String finalAnswer = sqlAnswer.getText();
+                  sqlStatement += "'" + finalAnswer + "'";
+                  Question3(globalConnection, sqlStatement, tableSelected);
+                }
+              };
+              sqlAnswer.addActionListener(getAnswer);
+            }
+          };
+          columnCB.addActionListener(getData);
+        }
+      };
+      tableCB.addActionListener(queryInput);
+    }
+  };
     
   public static void Question2(Connection connect, String statement)
   {
     String newStatement = statement;
-    System.out.println("Starting Question 2");
     Graph g;
     int NodeCounter = 0;
     Vector<GraphNode> initialNodes = new Vector<GraphNode>();
@@ -482,6 +618,65 @@ public class test {
     }
   }
 
+  public static void Question3(Connection connect, String statement, String tableSelected)
+  {
+    String newStatement = statement;
+    try
+    {
+      //System.out.println("Table Selected: " + tableSelected);
+      Statement stmt = connect.createStatement();
+
+      System.out.println("Got your Query, collecting data!");
+      ResultSet result = stmt.executeQuery(newStatement);
+
+      if(tableSelected == "name_basics")
+      {
+        //System.out.println("Getting Info From name_basics");
+        String answerString = "";
+        while (result.next()) {
+          answerString += result.getString("primaryname") + "\n";
+          answerString += result.getString("birthyear") + "\n";
+          answerString += result.getString("deathyear") + "\n";
+          answerString += result.getString("profession") + "\n";
+          answerString += result.getString("titles") + "\n";
+        }
+        JOptionPane.showMessageDialog(null, answerString);
+      }
+      else if(tableSelected == "title_basics")
+      {
+        //System.out.println("Getting Info From title_basics");
+        String answerString = "";
+        while (result.next()) {
+          answerString += result.getString("titletype") + "\n";
+          answerString += result.getString("primarytitle") + "\n";
+          answerString += result.getString("originaltitle") + "\n";
+          answerString += result.getString("isadult") + "\n";
+          answerString += result.getString("startyear") + "\n";
+          answerString += result.getString("endyear") + "\n";
+          answerString += result.getString("runtimeMinutes") + "\n";
+          answerString += result.getString("genres") + "\n";
+        }
+        JOptionPane.showMessageDialog(null, answerString);
+      }
+    }
+    catch(Exception e)
+    {
+      JOptionPane.showMessageDialog(null, e);
+    }
+
+    try
+    {
+      globalConnection.close();
+      JOptionPane.showMessageDialog(null, "Connection Closed");
+      System.exit(0);
+    }
+    catch(Exception e)
+    {
+      JOptionPane.showMessageDialog(null, "Connection NOT Closed.");
+      System.exit(1);
+    }
+  }
+
 	public static void main(String[] args) {
     //Building the connection
     Connection conn = null;
@@ -502,15 +697,18 @@ public class test {
 
     globalConnection = conn;
 
-		JButton question1,question2;
+		JButton question1, question2, question3;
 		question1 = new JButton("Find the closest connection between 2 cast members");
-		question2 = new JButton("Find the Least ammount of cast members who have worked every year between two years");
+    question2 = new JButton("Find the Least ammount of cast members who have worked every year between two years");
+    question3 = new JButton("Any Query");
 		frame.add(question1);
-		frame.add(question2);
-		frame.setLayout(new GridLayout(2,1));
+    frame.add(question2);
+    frame.add(question3);
+		frame.setLayout(new GridLayout(3,1));
 		question1.addActionListener(choice1);
-		question2.addActionListener(choice2);
-		frame.setLocation(1000, 1000);
+    question2.addActionListener(choice2);
+    question3.addActionListener(choice3);
+		frame.setLocation(100, 100);
 		frame.setSize(800,300);
     frame.setVisible(true);
 	}
