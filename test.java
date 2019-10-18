@@ -50,9 +50,9 @@ public class test {
     qChildren.add(node2);
 
     while(true){
+        node temp = qChildren.peek();
 	if (temp.getTree().isConnectionFound())
             break;
-        node temp = qChildren.peek();
         findRecursion(qChildren.remove(), temp.getHeight());
         qChildren.addAll(temp.getChildren());
         for (int i = 0; i < temp.getChildren().size(); i++) {
